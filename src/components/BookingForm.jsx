@@ -6,7 +6,7 @@ const SERVICE_OPTIONS = [
   { label: 'Deluxe', value: 'deluxe', rate: 20 },
 ];
 
-export default function BookingForm({ onBookingComplete }) {
+export default function BookingForm({ onBookingComplete, estimateNote }) {
   const [serviceType, setServiceType] = useState(SERVICE_OPTIONS[0].value);
   const [windowCount, setWindowCount] = useState(1);
   const [address, setAddress] = useState('');
@@ -45,7 +45,7 @@ export default function BookingForm({ onBookingComplete }) {
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Number of Windows</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Number of Windows</label>
         <input
           type="number"
           min="1"
@@ -67,6 +67,11 @@ export default function BookingForm({ onBookingComplete }) {
           required
         />
       </div>
+      {estimateNote && (
+        <div className="text-xs text-yellow-700 bg-yellow-100 rounded px-2 py-1 mb-2">
+          The window count and quote are estimates. Final price will be given on arrival.
+        </div>
+      )}
       {error && <div className="text-red-500 text-sm">{error}</div>}
       <button
         type="submit"

@@ -12,6 +12,10 @@ function App() {
   const [slot, setSlot] = useState(null);
   const [paid, setPaid] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
+  const [adminAuth, setAdminAuth] = useState(false);
+  const [adminPrompt, setAdminPrompt] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
+  const [adminError, setAdminError] = useState('');
 
   const handleBookingComplete = (data) => {
     setBookingData(data);
@@ -24,10 +28,31 @@ function App() {
   };
   const handlePaymentSuccess = () => setPaid(true);
 
+  const handleAdminClick = () => {
+    setAdminPrompt(true);
+    setAdminPassword('');
+    setAdminError('');
+  };
+  const handleAdminLogin = (e) => {
+    e.preventDefault();
+    if (adminPassword === 'shineadmin') {
+      setAdminAuth(true);
+      setShowAdmin(true);
+      setAdminPrompt(false);
+    } else {
+      setAdminError('Incorrect password');
+    }
+  };
+  const handleAdminLogout = () => {
+    setShowAdmin(false);
+    setAdminAuth(false);
+  };
+
   if (showAdmin) {
+    if (!adminAuth) return null;
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 flex flex-col items-center justify-center px-4 py-8">
-        <button onClick={() => setShowAdmin(false)} className="mb-4 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Back to Booking</button>
+        <button onClick={handleAdminLogout} className="mb-4 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Back to Booking</button>
         <AdminDashboard />
       </div>
     );
@@ -42,12 +67,33 @@ function App() {
           <span className="text-2xl font-extrabold text-blue-800 tracking-tight">Shine Legend</span>
         </div>
         <button
-          onClick={() => setShowAdmin(true)}
+          onClick={handleAdminClick}
           className="text-sm text-blue-500 underline hover:text-blue-700 transition"
         >
           Admin Dashboard
         </button>
       </div>
+      {/* Admin Password Prompt */}
+      {adminPrompt && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <form onSubmit={handleAdminLogin} className="bg-white p-8 rounded-lg shadow-lg flex flex-col gap-4 min-w-[300px]">
+            <h2 className="text-xl font-bold text-blue-800">Admin Login</h2>
+            <input
+              type="password"
+              placeholder="Enter admin password"
+              value={adminPassword}
+              onChange={e => setAdminPassword(e.target.value)}
+              className="border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400"
+              autoFocus
+            />
+            {adminError && <div className="text-red-500 text-sm">{adminError}</div>}
+            <div className="flex gap-2">
+              <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Login</button>
+              <button type="button" onClick={() => setAdminPrompt(false)} className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Cancel</button>
+            </div>
+          </form>
+        </div>
+      )}
       {/* Hero Section */}
       <div className="flex flex-col items-center justify-center flex-1">
         <h1 className="text-5xl md:text-6xl font-extrabold text-blue-900 mb-4 text-center drop-shadow-lg">
@@ -65,8 +111,8 @@ function App() {
         {/* Booking Card */}
         <div className="w-full max-w-xl">
           <div className="bg-white/90 rounded-3xl shadow-2xl ring-1 ring-blue-100 p-8 md:p-10 transition-all">
-            {step === 0 && <BookingForm onBookingComplete={handleBookingComplete} />}
-            {step === 1 && <ServiceSummary data={bookingData} onProceed={handleProceedToCalendar} />}
+            {step === 0 && <BookingForm onBookingComplete={handleBookingComplete} estimateNote />}
+            {step === 1 && <ServiceSummary data={bookingData} onProceed={handleProceedToCalendar} estimateNote />}
             {step === 2 && <CalendarSelector onSlotSelect={handleSlotSelect} />}
             {step === 3 && (
               <PaymentForm price={bookingData.windowCount * bookingData.rate} onPaymentSuccess={handlePaymentSuccess} />
@@ -90,7 +136,7 @@ function App() {
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1 text-blue-700 hover:text-blue-900 transition"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="6" fill="#0A66C2"/><path d="M8.839 11.667H11.06V20H8.839V11.667ZM9.95 8.667C10.67 8.667 11.25 9.247 11.25 9.967C11.25 10.687 10.67 11.267 9.95 11.267C9.23 11.267 8.65 10.687 8.65 9.967C8.65 9.247 9.23 8.667 9.95 8.667ZM12.839 11.667H15.06V12.667H15.09C15.39 12.127 16.09 11.567 17.09 11.567C19.09 11.567 19.5 12.847 19.5 14.447V20H17.28V15.047C17.28 13.947 17.26 12.547 15.78 12.547C14.28 12.547 14.06 13.747 14.06 15.007V20H11.839V11.667H12.839Z" fill="white"/></svg>
+          <img src="/logo-linkedin.png" alt="LinkedIn" width="32" height="32" className="inline-block align-middle rounded-full" />
           <span className="sr-only">LinkedIn</span>
         </a>
       </footer>
